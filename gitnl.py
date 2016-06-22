@@ -46,12 +46,6 @@ def parse_to_git(args):
 #     8  nameB    _ NOUN   NN    _     5  pobj    _     _
 #     9      .    _    .    .    _     1 punct    _     _
 
-
-    fulllist = [{'group': 'ROOT', 'fine': 'VRB', 'value': 'push'},
-                {'group': 'prep', 'fine': 'in', 'value': 'to'},
-                {'group': 'ROOT', 'fine': 'VRB', 'value': 'push'}
-                ]
-
     ind = [i for i, line in enumerate(outlist) if ':Seconds elapsed' in line]
     if not ind:
         raise Exception('No lines found in output from command')
@@ -60,8 +54,9 @@ def parse_to_git(args):
 
     chunk = outlist[ind+1:]
     t = ascii.read(chunk, names=['level', 'word', 'b1', 'coarse', 'fine', 'b2', 'parent', 'group', 'b3', 'b4'])
-
     t.sort('parent')
+    print(t)
+
     if t[0]['coarse'] != 'VERB':
         raise Exception('Parent 0 root is not a VERB')
     else:
