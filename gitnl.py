@@ -100,6 +100,9 @@ if __name__ == '__main__':
     # if res.strip() == 'e':
     #     sys.exit(1)
 
+    os.chdir('/Users/Brian/Work/github_projects/gitnl/')
+
+
     gitpath = subprocess.check_output(['which', 'git']).decode()
     command = gitpath.strip() + ' ' + gitcmds.strip()
     print('Doing this command: "{}"'.format(command))
