@@ -6,7 +6,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
-from subprocess import Popen, PIPE, STDOUT, check_output
+from subprocess import Popen, PIPE, STDOUT
 
 
 def parse_to_git(args):
@@ -34,9 +34,10 @@ def parse_to_git(args):
 
 
 cwd = os.getcwd()
-os.chdir('/Users/andrews/software/python/models/syntaxnet/')
+path_tf = os.path.join(os.getenv('TENSORFLOW_DIR'), 'syntaxnet')
+os.chdir(path_tf)
+demo_file = os.path.join(path_tf, 'syntaxnet', 'demo.sh')
 
-demo_file = '/Users/andrews/software/python/models/syntaxnet/syntaxnet/demo.sh'
 phrase = 'push branch test_branch to remote github_repo.'
 bash_cmd = 'echo {0} | {1}'.format(phrase, demo_file)
 pp = Popen(bash_cmd, shell=True, stdout=PIPE, stderr=STDOUT)
