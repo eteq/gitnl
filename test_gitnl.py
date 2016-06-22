@@ -12,7 +12,7 @@ class GitnlTestCase(unittest.TestCase):
         actual = gitnl.parse_to_git('push my branch branchfrom to a remote called remotename')
         self.assertEqual(actual, desired)
 
-    def test_rename_branch(self):
+    def test_rename_branch_locally(self):
         desired = 'branch -m old_branch new_branch'
         actual = gitnl.parse_to_git('branch rename branch old_branch to new_branch')
         self.assertEqual(actual, desired)
