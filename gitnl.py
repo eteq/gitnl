@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from __future__ import print_function, division, absolute_import
 
 import os
@@ -31,6 +33,8 @@ def parse_to_git(args):
     return cmds
 
 
+cwd = os.getcwd()
+os.chdir('/Users/andrews/software/python/models/syntaxnet/')
 
 demo_file = '/Users/andrews/software/python/models/syntaxnet/syntaxnet/demo.sh'
 phrase = 'push branch test_branch to remote github_repo.'
@@ -42,6 +46,8 @@ for i, it in enumerate(out_split):
     if it[0] == '1':
         ind = i
         break
+
+os.chdir(cwd)
 
 colln_tabbed = out_split[ind:-3]  # need better way to cut off trailing useless rows
 colln = [it.split('\t') for it in colln_tabbed]
@@ -70,6 +76,7 @@ hier['parent'] = pd.to_numeric(hier['parent'])
 #  ' |   +-- github_repo NN dobj']
 
 if __name__ == '__main__':
+    
     # allargs = ' '.join(sys.argv[1:])
     gitcmds = parse_to_git(hier)
 
