@@ -5,7 +5,7 @@ import subprocess
 def parse_to_git(args):
     """
     returns a string with what should be passed to git.  E.g.,
-    "push remotename branch"
+    "push remotename branchname"
     """
     raise NotImplementedError
     return 'push eteq master'
