@@ -95,11 +95,13 @@ def set_command(hier, git_synopsis):
             if word == kk:
                 action = word
                 break
-
-    if action is None:
-        cmds = list_git_commands(git_synopsis)
-        raise ValueError('None of the words match any of the git commands:\n{}'.format(cmds))
-
+    try:
+        if action is None:
+            cmds = list_git_commands(git_synopsis)
+            raise ValueError('\nNone of the words match any valid git command:\n\n{}'.format(cmds))
+    except ValueError as ee:
+        print(ee.message)
+        sys.exit(1)
     return action
 
 
