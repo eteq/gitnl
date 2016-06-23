@@ -41,9 +41,9 @@ def get_synopsis(filename):
         read = False
         start = None
         for i, line in enumerate(fin):
-            if line == 'SYNOPSIS':
-                start = i + 2
-            elif line == 'DESCRIPTION':
+            if 'SYNOPSIS' in line:
+                start = i + 3
+            elif 'DESCRIPTION' in line:
                 read = False
             elif i == start:
                 read = True
