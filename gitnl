@@ -35,6 +35,23 @@ import numpy as np
 import pandas as pd
 
 
+def get_synopsis(filename):
+    with open(filename, 'r') as fin:
+        synopsis = []
+        read = False
+        start = None
+        for i, line in enumerate(fin):
+            if line == 'SYNOPSIS':
+                start = i + 2
+            elif line == 'DESCRIPTION':
+                read = False
+            elif i == start:
+                read = True
+
+            if read:
+                synopsis.append(line)
+    return synopsis
+
 def get_git_commands():
     all_cmds = {}
     for fname in os.listdir(os.getenv('GITDOCS')):
