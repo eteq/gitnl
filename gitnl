@@ -47,47 +47,94 @@ def get_synopsis(filename):
                 read = False
             elif i == start:
                 read = True
-
             if read:
                 synopsis.append(line)
     return synopsis
+
 
 def get_git_commands():
     all_cmds = {}
     for fname in os.listdir(os.getenv('GITDOCS')):
         if fnmatch.fnmatch(fname, 'git-*.txt'):
             cmd = fname.split('git-')[1].split('.txt')[0]
-            cmd = ' '.join(cmd.split('-'))
-            # TODO open fname and read synopsis with syntax
-            # syntax = 
-            # all_cmds[cmd] = syntax
+            if cmd[-1] == '\n':
+                cmd = cmd[:-1]
+            all_cmds[cmd] = get_synopsis(os.path.join(os.getenv('GITDOCS'), fname))
     return all_cmds
 
-git_syntax = dict(push='git push <remote> <branch>')
+
+def list_git_commands(git_synopsis):
+    srt = sorted(git_synopsis.keys())
+    n_keys = len(srt)
+    n_rows = np.ceil(n_keys / 3).astype(int)
+    cmds = ''
+    for ii in range(n_rows):
+        left = '{}'.format(srt[ii])
+        center = '{}'.format(srt[n_rows + ii])
+        right = '{}'.format(srt[(n_rows * 2) + ii])
+        cmds = ''.join((cmds, '{0:24} {1:24} {2:24}\n'.format(left, center, right)))
+    return cmds
 
 
+def set_command(hier, git_synopsis):
+    """Set the git command
 
-def parse_to_git(args):
+    First cross-match with the list of git commands. If that fails, then use the ROOT word.
+
+    Args:
+        hier (DataFrame): Sentence hierarchy.
+        git_synopsis (dict): Git command synopses.
+
+    Returns:
+        str
     """
-    returns a string with what should be passed to git.  E.g.,
-    "push remotename branchname"
-    """
-    print(args)
-    ind_prep = np.atleast_1d(np.array(args[args['pos'] == 'PRT']['level']))
-    if len(ind_prep) == 0:
-        print('No preposition found')
-    elif len(ind_prep) > 1:
-        print('Multiple prepositions found')
-    action = args[args['group'] == 'ROOT']['word'].ix[0]
-    others = args[args['pos'] == 'NOUN']
-    others1 = others[others['parent'] < ind_prep[0]]
-    others2 = others[others['parent'] > ind_prep[0]]
+    # try matching each word to the list of git commands
+    action = None
+    for kk in git_synopsis.keys():
+        for word in hier['word']:
+            if word == kk:
+                action = word
+                break
 
-    kwargs = dict(action=action, args1=others1['word'].tolist(), args2=others2['word'].tolist())
+    if action is None:
+        cmds = list_git_commands(git_synopsis)
+        raise ValueError('None of the words match any of the git commands:\n{}'.format(cmds))
+
+    return action
+
+
+def parse_to_git(hier, git_synopsis):
+    """Returns a string with what should be passed to git.
+
+    e.g., 'push remotename branchname'
+
+    Args:
+        hier (DataFrame): Sentence hierarchy.
+        git_synopsis (dict): Git command synopses.
+
+    Returns:
+        str
+    """
+    # try not relying on a preposition
+    # ind_prep = np.atleast_1d(np.array(hier[hier['pos'] == 'PRT']['level']))
+    # if len(ind_prep) == 0:
+    #     print('No preposition found')
+    # elif len(ind_prep) > 1:
+    #     print('Multiple prepositions found')
+    # others1 = others[others['parent'] < ind_prep[0]]
+    # others2 = others[others['parent'] > ind_prep[0]]
+
+    action = set_command(hier, git_synopsis)
+    nouns = hier[hier['pos'] == 'NOUN']
+
+    # try to get required args from docs
+    # required_args = get_required_args(action, )
+
+    kwargs = dict(action=action)
     cmds = []
-    for a2 in kwargs['args2']:
-        for a1 in kwargs['args1']:
-            cmds.append('{0} {1} {2}'.format(action, a1, a2))
+    # for a2 in kwargs['args2']:
+    #     for a1 in kwargs['args1']:
+    cmds.append('{0}'.format(action))
     print('kwargs', kwargs)
     return cmds
 
@@ -132,7 +179,11 @@ if __name__ == '__main__':
     hier['level'] = pd.to_numeric(hier['level'])
     hier['parent'] = pd.to_numeric(hier['parent'])
 
-    gitcmds = parse_to_git(hier)
+    print(hier)
+    git_synopsis = get_git_commands()
+    gitcmds = parse_to_git(hier, git_synopsis)
+
+    
 
     prompt = 'Options:\n'
     for i, cmd in enumerate(gitcmds):
