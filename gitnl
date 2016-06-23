@@ -41,7 +41,6 @@ def parse_to_git(args):
     """
     print(args)
     ind_prep = np.atleast_1d(np.array(args[args['pos'] == 'PRT']['level']))
-    print(ind_prep)
     if len(ind_prep) == 0:
         print('No preposition found')
     elif len(ind_prep) > 1:
@@ -98,8 +97,6 @@ if __name__ == '__main__':
     hier['parent'] = pd.to_numeric(hier['parent'])
 
     gitcmds = parse_to_git(hier)
-
-    print(gitcmds)
 
     prompt = 'Options:\n'
     for i, cmd in enumerate(gitcmds):
