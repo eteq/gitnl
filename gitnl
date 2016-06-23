@@ -7,22 +7,22 @@ Parse a natural language guess at a git command to select correct git command.
 
 Examples:
 
-    ./gitnl push branch test_branch to remote github_repo.
+    ./gitnl push remote origin to branch brett.
 
-    level      word   pos fine parent  group
-     1         push  VERB   VB      0   ROOT
-     2       branch  NOUN   NN      3     nn
-     3  test_branch  NOUN   NN      1   dobj
-     4           to   PRT   TO      5    aux
-     5       remote  VERB   VB      1  xcomp
-     6  github_repo  NOUN   NN      5   dobj
+       level    word   pos fine  parent  group
+    0      1    push  VERB   VB       0   ROOT
+    1      2  remote   ADJ   JJ       3   amod
+    2      3  origin  NOUN   NN       1   dobj
+    3      4      to   PRT   TO       5    aux
+    4      5  branch  VERB   VB       1  xcomp
+    5      6   brett  NOUN   NN       5   dobj
 
-    ['push VB ROOT',
-     ' +-- test_branch NN dobj',
-     ' |   +-- branch NN nn',
-     ' +-- remote VB xcomp',
-     ' |   +-- to TO aux',
-     ' |   +-- github_repo NN dobj']
+    push VB ROOT
+     +-- origin NN dobj
+     |   +-- remote JJ amod
+     +-- to TO prep
+         +-- brett NN pobj
+             +-- branch VB nn
 """
 
 from __future__ import print_function, division, absolute_import
@@ -117,5 +117,6 @@ if __name__ == '__main__':
 
     # gitpath = check_output(['which', 'git']).decode()
     # command = gitpath.strip() + ' ' + gitcmds.strip()
-    print('Doing this command: "git {}"'.format(gitcmds[res]))
-    # sys.exit(os.system(command))
+    command = 'git {}'.format(gitcmds[res])
+    print('Doing this command: "{}"'.format(command))
+    sys.exit(os.system(command))
