@@ -39,7 +39,9 @@ def parse_to_git(args):
     returns a string with what should be passed to git.  E.g.,
     "push remotename branchname"
     """
+    print(args)
     ind_prep = np.atleast_1d(np.array(args[args['pos'] == 'PRT']['level']))
+    print(ind_prep)
     if len(ind_prep) == 0:
         print('No preposition found')
     elif len(ind_prep) > 1:
@@ -72,7 +74,6 @@ if __name__ == '__main__':
     except NameError:
         demo_file = os.path.join(path_tf, 'syntaxnet', 'demo.sh')
 
-
     phrase = allargs
     bash_cmd = 'echo {0} | {1}'.format(phrase, demo_file)
     pp = Popen(bash_cmd, shell=True, stdout=PIPE, stderr=STDOUT)
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     os.chdir(cwd)
 
     # need better way to cut off trailing useless rows
-    colln_tabbed = out_split[ind:-3]
+    colln_tabbed = out_split[ind:-2]
     colln = [it.split('\t') for it in colln_tabbed]
     columns = ['level', 'word', 'ig1', 'pos', 'fine', 'ig2', 'parent', 'group', 'ig3', 'ig4']
 
@@ -106,7 +107,11 @@ if __name__ == '__main__':
 
     prompt += 'or type "q" to quit.\n\n'
 
-    res = input(prompt)
+    try:
+        res = input(prompt)
+    except NameError:
+        sys.exit(1)
+
     if res in ['q', 'Q', 'quit', 'Quit']:
         sys.exit(1)
 
