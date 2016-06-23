@@ -29,9 +29,25 @@ from __future__ import print_function, division, absolute_import
 
 import os
 import sys
+from subprocess import Popen, PIPE, STDOUT
+import fnmatch
 import numpy as np
 import pandas as pd
-from subprocess import Popen, PIPE, STDOUT
+
+
+def get_git_commands():
+    all_cmds = {}
+    for fname in os.listdir(os.getenv('GITDOCS')):
+        if fnmatch.fnmatch(fname, 'git-*.txt'):
+            cmd = fname.split('git-')[1].split('.txt')[0]
+            cmd = ' '.join(cmd.split('-'))
+            # TODO open fname and read synopsis with syntax
+            # syntax = 
+            # all_cmds[cmd] = syntax
+    return all_cmds
+
+git_syntax = dict(push='git push <remote> <branch>')
+
 
 
 def parse_to_git(args):
@@ -65,10 +81,13 @@ if __name__ == '__main__':
     path_tf = os.path.join(os.getenv('TENSORFLOW_DIR'), 'syntaxnet')
     path_gitnl = os.path.join(os.getenv('GITNL_DIR'))
 
+    # could not get tensorflow working from other directories, so change into its directory
     cwd = os.getcwd()
     os.chdir(path_tf)
 
     try:
+        # Use a modified version of the tensorflow demo script that prints conll format instead of
+        # asiitree.
         demo_file = os.path.join(path_gitnl, 'demo.sh')
     except NameError:
         demo_file = os.path.join(path_tf, 'syntaxnet', 'demo.sh')
@@ -104,6 +123,8 @@ if __name__ == '__main__':
 
     prompt += 'or type "q" to quit.\n\n'
 
+    # returns NameError when input is 'q' instead of quitting (see if statement below for desired
+    # behavior)
     try:
         res = input(prompt)
     except NameError:
@@ -112,6 +133,7 @@ if __name__ == '__main__':
     if res in ['q', 'Q', 'quit', 'Quit']:
         sys.exit(1)
 
+    # Need to generalize so that this script can be run from on any repo.
     # gitpath = check_output(['which', 'git']).decode()
     # command = gitpath.strip() + ' ' + gitcmds.strip()
     command = 'git {}'.format(gitcmds[res])
