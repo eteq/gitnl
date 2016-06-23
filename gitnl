@@ -77,7 +77,7 @@ def list_git_commands(git_synopsis):
 
 
 def set_command(hier, git_synopsis):
-    """Set the git command
+    """Set the git command.
 
     First cross-match with the list of git commands. If that fails, then use the ROOT word.
 
@@ -105,6 +105,34 @@ def set_command(hier, git_synopsis):
     return action
 
 
+def get_required_args(action, git_synopsis):
+    """
+    """
+    synopsis = ''.join(git_synopsis[action])
+    required_args = []
+    sq_bracket = False
+    ang_bracket = False
+    for ch in synopsis:
+        if ch == '[':
+            sq_bracket = True
+        elif ch == ']':
+            sq_bracket = False
+
+        if not sq_bracket:
+            if ch == '<':
+                ang_bracket = True
+                arg = ''
+
+            if ang_bracket:
+                arg = ''.join((arg, ch))
+
+            if ch == '>':
+                ang_bracket = False
+                required_args.append(arg)
+
+    return required_args
+
+
 def parse_to_git(hier, git_synopsis):
     """Returns a string with what should be passed to git.
 
@@ -130,14 +158,20 @@ def parse_to_git(hier, git_synopsis):
     nouns = hier[hier['pos'] == 'NOUN']
 
     # try to get required args from docs
-    # required_args = get_required_args(action, )
+    required_args = get_required_args(action, git_synopsis)
+
+    required_cmd = '{0} {1}'.format('git', action)
+    if len(required_args) > 0:
+        for it in required_args:
+            required_cmd = ' '.join((required_cmd, it))
+    
+    print('\nsyntax:  {}\n'.format(required_cmd))
 
     kwargs = dict(action=action)
     cmds = []
     # for a2 in kwargs['args2']:
     #     for a1 in kwargs['args1']:
     cmds.append('{0}'.format(action))
-    print('kwargs', kwargs)
     return cmds
 
 
@@ -181,11 +215,9 @@ if __name__ == '__main__':
     hier['level'] = pd.to_numeric(hier['level'])
     hier['parent'] = pd.to_numeric(hier['parent'])
 
-    print(hier)
+    print('\nHierarchy:\n\n{}'.format(hier))
     git_synopsis = get_git_commands()
     gitcmds = parse_to_git(hier, git_synopsis)
-
-    
 
     prompt = 'Options:\n'
     for i, cmd in enumerate(gitcmds):
