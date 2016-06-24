@@ -145,33 +145,28 @@ def parse_to_git(hier, git_synopsis):
     Returns:
         str
     """
-    # try not relying on a preposition
-    # ind_prep = np.atleast_1d(np.array(hier[hier['pos'] == 'PRT']['level']))
-    # if len(ind_prep) == 0:
-    #     print('No preposition found')
-    # elif len(ind_prep) > 1:
-    #     print('Multiple prepositions found')
-    # others1 = others[others['parent'] < ind_prep[0]]
-    # others2 = others[others['parent'] > ind_prep[0]]
-
     action = set_command(hier, git_synopsis)
     nouns = hier[hier['pos'] == 'NOUN']
 
-    # try to get required args from docs
     required_args = get_required_args(action, git_synopsis)
-
     required_cmd = '{0} {1}'.format('git', action)
     if len(required_args) > 0:
         for it in required_args:
             required_cmd = ' '.join((required_cmd, it))
-    
+
     print('\nsyntax:  {}\n'.format(required_cmd))
 
-    kwargs = dict(action=action)
     cmds = []
-    # for a2 in kwargs['args2']:
-    #     for a1 in kwargs['args1']:
-    cmds.append('{0}'.format(action))
+    # Loop over all combinations of right number of nouns
+    # Idea: loop over all combinations of nouns then only select the first N that are required
+    for noun in nouns:
+        # ctmp = '{0}'.format(action)
+        # cmds.append()
+        pass
+
+    for ii, rarg in len(required_args):
+        pass
+
     return cmds
 
 
